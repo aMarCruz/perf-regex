@@ -24,7 +24,7 @@ Regex name | Description | Note
 `HTML_COMM` | Valid HTML comments | HTML comments can be used in browsers with JavaScript
 `ISCOMMENT` | The start of a comment | For both, HTML and JS comments, with no `g` option.
 
-Except `ISCOMMENT`, all the regexes has the `'g'` option and nothing more, so you can use it with `exec` or `replace`
+Except `ISCOMMENT`, all the regexes has the `'g'` option and nothing more, so you can use it with `exec` or `replace`.
 
 Please note that you don't need the `'m'`, pref-regexes works with Win/Mac/Unix EOLs with no problems, but if you like use the `RegExp` constructor with the `source` property to recrate the regex like in the example.
 
@@ -67,7 +67,7 @@ let silly = `foo ${ "`" + '`' + `\`${ { bar }.baz }\`` }`
 
 ## Known issues
 
-`JS_REGEXES` fail with literal regexes starting with `//` or `/>`, please follow the best-practices and use `/\/` or `/\>`.
+`JS_REGEXES` fail matching literal regexes starting with `//` or `/>`, please follow the best-practices and use `/\/` or `/\>`.
 
 [build-image]:    https://img.shields.io/travis/aMarCruz/perf-regexes.svg
 [build-url]:      https://travis-ci.org/aMarCruz/perf-regexes
