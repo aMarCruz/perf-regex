@@ -1,0 +1,55 @@
+{
+  "name": "perf-regexes",
+  "version": "0.0.1",
+  "description": "Optimized and powerful regexes for JavaScript",
+  "main": "dist/perf-regexes.cjs.js",
+  "jsnext:main": "dist/perf-regexes.es.js",
+  "engines": {
+    "node": ">=0.12"
+  },
+  "scripts": {
+    "test": "node-version-gte-4 && mocha || mocha --compilers js:./buble-register",
+    "lint": "node-version-gte-4 && eslint src test/index.js || node-version-lt-4",
+    "pretest": "npm run lint && npm run build",
+    "build": "rm -rf dist/* && npm run build:cjs && npm run build:es6",
+    "build:cjs": "rollup -c -f cjs -o dist/perf-regexes.cjs.js",
+    "build:es6": "rollup -c -f es -o dist/perf-regexes.es.js",
+    "prepublish": "npm test"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aMarCruz/perf-regexes"
+  },
+  "keywords": [
+    "regex",
+    "regexes",
+    "javascript",
+    "modules",
+    "match",
+    "source"
+  ],
+  "author": {
+    "name": "aMarCruz",
+    "email": "amarcruzbox-git@yahoo.com",
+    "url": "https://github.com/aMarCruz"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aMarCruz/perf-regexes/issues"
+  },
+  "homepage": "https://github.com/aMarCruz/perf-regexes",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "eslint": "^3.4.0",
+    "expect": "^1.20.2",
+    "mocha": "^3.0.2",
+    "node-version-check": "^2.1.1",
+    "rollup": "^0.34.13",
+    "rollup-plugin-buble": "^0.13.0"
+  }
+}
