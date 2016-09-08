@@ -15,7 +15,7 @@ export const JS_SLCOMM = /\/\/[^\n\r]*/g
 export const JS_STRING = /"[^"\n\r\\]*(?:\\(?:\r\n?|[\S\s])[^"\n\r\\]*)*"|'[^'\n\r\\]*(?:\\(?:\r\n?|[\S\s])[^'\n\r\\]*)*'/g
 
 /** Allow skip division operators and closing html tags to detect non-regex slashes */
-export const JS_DIVISOR = /(?:\b(?:return|yield)\s+|<\/[-a-zA-Z]|(?:[$\w\)\]]|\+\+|--)\s*\/(?![*\/]))/g
+export const JS_DIVISOR = /(?:\b(?:return|yield|in|of)\s+|<\/[-a-zA-Z]|(?:[$\w\)\]]|\+\+|--)\s*\/(?![*\/]))/g
 
 /** Matches literal regexes -- $1 last slash of the regex */
 export const JS_REGEX = /\/(?=[^*\/\n\r>])[^[\n\r/\\]*(?:(?:\[(?:\\[^\n\r]|[^\]\n\r\\]*)*\]|\\.)[^[/\n\r\\]*)*?(\/)[gim]*/g
@@ -25,6 +25,15 @@ export const HTML_COMM = /<!--(?!>)[\S\s]*?-->/g
 
 /** Matches the start of a comment */
 export const ISCOMMENT = /^(?:<--|\/[*\/])/
+
+/** Matches trailing spaces of lines */
+export const TRAILING_SPACES = /[ \t\f\v]*$/gm
+
+/** Matches empty lines */
+export const EMPTY_LINES = /^[ \t\f\v]*$/gm
+
+/** Matches empty lines */
+export const NON_EMPTY_LINES = /^[ \t\f\v]*\S.*/mg
 
 /**
  * ES6 template strings (not recommended).
