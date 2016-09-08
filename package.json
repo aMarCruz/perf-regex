@@ -1,6 +1,6 @@
 {
   "name": "perf-regexes",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Optimized and powerful regexes for JavaScript",
   "main": "dist/perf-regexes.cjs.js",
   "jsnext:main": "dist/perf-regexes.es.js",
