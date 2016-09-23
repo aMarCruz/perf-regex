@@ -12,25 +12,25 @@ Optimized and powerful regexes for JavaScript
 npm install perf-regexes --save
 ```
 
-Regexes included matches...
+## Included Regexes
 
-Regex name | Description | Note
----------- | ----------- | --------
-`JS_MLCOMM` | Valid multiline JS comment | Excludes invalid comments like `/*/`, supports nested `'/*'`
-`JS_SLCOMM` | Single line JS comment | From the `//` to the (but not including) next EOL
+Name | Description | Note
+---- | ----------- | --------
+`JS_MLCMNT` | Valid multiline JS comment | Excludes invalid comments like `/*/`, supports nested `'/*'`
+`JS_SLCMNT` | Single line JS comment | From the `//` to the (but not including) next EOL
 `JS_STRING` | Single and double quoted JS string | Handles nested quotes and escaped eols
-`JS_DIVISOR` | Division operator and closing html tag | To skip non-regex slashes
-`JS_REGEX` | Literal regex | It captures the last slash in `$1`
-`HTML_COMM` | Valid HTML comments | HTML comments can be used in browsers with JavaScript
-`ISCOMMENT` | The start of a comment | For both, HTML and JS comments, with no `g` option.
+`JS_REGEX` | Literal regex | Can match a divisor, so the match must be validated
+`JS_REGEX_P` | Literal regex | Captures a prefix in $1, the regex is not captured
+`HTML_CMNT` | Valid HTML comments | HTML comments with `<!--` and `-->` delimiters
 
-Except `ISCOMMENT`, all the regexes has the `'g'` option and nothing more, so you can use it with `exec` or `replace`.
+All the regexes has the option `'g'` and nothing more, so you can use it with `exec` or `replace`.
 
-Please note that you don't need the `'m'`, pref-regexes works with Win/Mac/Unix EOLs with no problems, but if you like use the `RegExp` constructor with the `source` property to recrate the regex like in the example.
+You don't need the option `'m'`, perf-regexes works with Win/Mac/Unix EOLs with no problems, but if you like use the `RegExp` constructor with the `source` property to recrate the regex like in the example.
 
-**Note:**
+> **NOTE:**
+>
+> Because the `'g'`, always set `lastIndex` before using a regex with the `exec` method.
 
-Because the `'g'`, always set `lastIndex = 0` before using a regex with the `exec` method.
 
 ## Example
 
@@ -46,28 +46,25 @@ function removeComments(source) {
     _R.JS_MLCOMM.source,
     _R.JS_SLCOMM.source,
     _R.JS_STRING.source,
-    _R.JS_DIVISOR.source,
-    _R.JS_REGEX.source].join('|'), 'gm');
+    _R.JS_REGEX_P.source].join('|'), 'gm');
 
   return source.replace(re, match => {
-    return _R.ISCOMMENT.test(match) ? ' ' : match
+    return /^\/[/\*]/.test(match) ? ' ' : match
   })
 }
 ```
 
+## Matching Regexes
+
+It is not easy. Depending on code complexity, `JS_REGEX_P` can do the work with 99% accuracy, but you need handle the prefix captured in $1.
+
+Also, this fail matching literal regexes starting with `//` or `/>`, please follow the best-practices and use `/\/` or `/\>`.
+
+
 ## ES6 Template Strings
 
-There's another regex to detect ES6 template strings but it is not recommended since there's no way to parse nested ES6 template strings with the limited regex engine of JavaScript.
+There's no secure way to match ES6 Template Literals with regexes.
 
-This is an example of a complex, valid ES6 string:
-
-```js
-let silly = `foo ${ "`" + '`' + `\`${ { bar }.baz }\`` }`
-```
-
-## Known issues
-
-`JS_REGEXES` fail matching literal regexes starting with `//` or `/>`, please follow the best-practices and use `/\/` or `/\>`.
 
 [build-image]:    https://img.shields.io/travis/aMarCruz/perf-regexes.svg
 [build-url]:      https://travis-ci.org/aMarCruz/perf-regexes

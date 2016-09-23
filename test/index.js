@@ -1,30 +1,74 @@
 // TODO: more tests
-const expect = require('expect')
-const _R = require('../')
+var expect = require('expect')
+var _R = require('../')
 
-describe('JS_STRINGS', () => {
+describe('JS_STRING', function () {
 
   // removes 'g' to avoid setting lastIndex in each iteration
-  let STR = RegExp(_R.JS_STRING.source)
+  var STR = RegExp(_R.JS_STRING.source)
 
-  it('can handle escaped EOLs (Unix/Mac/Windows)', () => {
-    const ss = [
+  it('must skip escaped EOLs in Unix, Mac, or Windows style', function () {
+    var ss = [
       '"foo\\\nbar"',
       '"foo\\\rbar"',
-      '"foo\\\r\nbar"'
+      '"foo\\\r\nbar"',
+      '"foo\\\n\\\nbar"',
+      "'\\\nbar'",
+      "'foo\\\n'"
     ]
-
-    ss.forEach(s => { expect(s).toMatch(STR) })
+    ss.forEach(function (s) { expect(s).toMatch(STR) })
   })
 
-  it('can handle nested (escaped) quotes', () => {
-    const ss = ['"foo\\"bar"', '"\\""',
-                "'foo\\'bar'", "'\\''"]
-
-    ss.forEach(s => {
+  it('must skip nested escaped quotes', function () {
+    var ss = [
+      '"foo\\"bar"', '"a\\"\\"b"', '"\\""',
+      "'foo\\'bar'", "'a\\'\\'b'", "'\\''"
+    ]
+    ss.forEach(function (s) {
       expect(s).toMatch(STR)
       expect(s.match(STR)[0]).toMatch(s)
     })
   })
+})
 
+describe('JS_REGEX_P', function () {
+
+  var RE = RegExp(_R.JS_REGEX_P.source)
+
+  it('must skip JavaScript comments', function () {
+    var ss = [
+      '// This is a comment',
+      '( /* and this */);',
+      '/regex/'
+    ]
+    var result = ss.join('\n').match(RE)
+
+    expect(result).toBeAn(Array)
+    expect(result[1]).toBe(';\n')
+    expect(result[0]).toBe(';\n/regex/')
+  })
+
+  it('must skip regex inside quotes', function () {
+    var ss = '"/noregex/"'
+
+    expect(ss.match(RE)).toBe(null)
+  })
+
+  it('must skip divisor operator', function () {
+    var ss = 'var s=10\n /one/ 1"'
+
+    expect(ss.match(RE)).toBe(null)
+  })
+
+  it('must not match previous increment/decrement operator', function () {
+    var ss = 's++ /one/ 1"'
+
+    expect(ss.match(RE)).toBe(null)
+  })
+
+  it('must match own increment/decrement operator', function () {
+    var ss = '++ /one/.exec(s).lastIndex"'
+
+    expect(ss.match(RE)).toExist()
+  })
 })
