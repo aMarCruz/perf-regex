@@ -58,7 +58,7 @@ function removeComments(source) {
 
 It is not easy. Depending on code complexity, `JS_REGEX_P` can do the work with 99% accuracy, but you need handle the prefix captured in $1.
 
-Also, this fail matching literal regexes starting with `//` or `/>`, please follow the best-practices and use `/\/` or `/\>`.
+Also, this fail matching literal regexes starting with `//` or `/*`, please follow the best-practices and use `/\/` or `/\*`.
 
 
 ## ES6 Template Strings
