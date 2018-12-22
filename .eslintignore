@@ -1,4 +1,4 @@
 **/coverage
-**/test/expect
-**/test/fixtures
+**/.vscode
 **/*.md
+**/*.min.js
