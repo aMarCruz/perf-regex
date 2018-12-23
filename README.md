@@ -71,9 +71,9 @@ Because the `'g'` flag, always set `lastIndex` or clone the regex before using i
 
 Using only one regex, this simple example will...
 
-- Remove all the empty lines from a text buffer.
-- Remove trailing whitespace of remaining lines.
-- Normalize line-endings to unix style.
+- Remove trailing whitespace of each line.
+- Remove the empty lines.
+- Normalize the line-endings to unix style.
 
 ```js
 const R = require('perf-regexes')
@@ -84,7 +84,7 @@ console.dir(cleaner(' \r\r\n\nAA\t\t\t\r\n\rBB\nCC  \rDD  '))
 // ⇒ 'AA\nBB\nCC\nDD'
 ```
 
-Using the previous "cleaner" function to cleanup HTML text:
+Use the previous function to cleanup HTML text:
 
 ```js
 const htmlCleaner = (html) => cleaner(html.replace(R.HTML_CMNT, ''))
@@ -105,7 +105,7 @@ console.dir(normalize('\rAA\r\r\nBB\r\nCC \nDD\r'))
 // ⇒ '\nAA\n\nBB\nCC \nDD\n'
 ```
 
-Convert double-quoted strings to single-quoted strings:
+### Double-quoted to single-quoted strings
 
 ```js
 const toSingleQuotes = (text) => text.replace(R.JS_STRING, (str) => {
@@ -120,7 +120,7 @@ console.log(toSingleQuotes(`"A's" 'B' "C"`))
 
 ### Matching Regexes
 
-With the arrival of [ES6TL](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) and new keywords, finding literal regexes with another regex in files of medium complexity is practically impossible. To do so, you need a JS parser such as [acorn](https://www.npmjs.com/package/acorn) or a specialized one such as [skip-regex](https://www.npmjs.com/package/skip-regex).
+With the arrival of [ES6TL](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) and new keywords, finding literal regexes with another regex is not viable, you need a JS parser such as [acorn](https://www.npmjs.com/package/acorn) or a specialized one such as [skip-regex](https://www.npmjs.com/package/skip-regex) to do it correctly.
 
 This is a very basic example that uses skip-regex:
 
@@ -179,7 +179,7 @@ searchRegexes(code)
 
 The previous code does not support ES6TL, but it works quite well on ES5 files and is very fast.
 
-For a more complete example of using perf-regexes, see the code of [js-cleanup](https://www.npmjs.com/package/rollup-plugin-cleanup), an utility for JS-like files that trims trailing spaces, compacts empty lines, normalizes line ends, and removes comments conditionally.
+For a more complete example of using perf-regexes, see [js-cleanup](https://github.com/aMarCruz/js-cleanup), an advanced utility with support for ES6 that trims trailing spaces, compacts empty lines, normalizes line-endings, and removes comments conditionally.
 
 ### ES6 Template Literals
 

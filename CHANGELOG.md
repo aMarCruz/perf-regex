@@ -1,6 +1,6 @@
 # Changelog of perf-regexes
 
-## [1.0.0] - 2018-12-21
+## [1.0.0] - 2018-12-22
 
 Complete refactorization of the repo.
 
