@@ -51,7 +51,7 @@ export var JS_STRING = RegExp(JS_DQSTR.source + '|' + JS_SQSTR.source, 'g')
  * Matches literal regexes
  * @type {RegExp}
  */
-export var JS_REGEX = /\/(?=[^*\n\r/])[^[\n\r/\\]*(?:(?:\\.|\[(?:\\.|[^\]\r\n\\]*)*\])[^[\n\r\\/]*)*?\/[gimuy]*/
+export var JS_REGEX = /\/(?=[^*\n\r/])[^[\n\r/\\]*(?:(?:\\.|\[(?:\\.|[^\]\r\n\\]*)*\])[^[\n\r\\/]*)*?\/[gimuys]*/
 
 /**
  * Matches regex, captures in $1 a prefix, in $2 the regex without options
@@ -63,21 +63,26 @@ export var JS_REGEX_P = RegExp(R_PREFIX.source + JS_REGEX.source, 'g')
 //#endregion
 //#region Lines --------------------------------------------------------------
 
-var WS = '[ \\t\\f\\v]'
-var LE = '\\r\\n?|\\n'
+// https://tc39.github.io/ecma262/#table-32
+var WS = '[ \\t\\v\\f\\xA0\\uFEFF]'
+
+// https://tc39.github.io/ecma262/#table-32
+var LE = '\\r\\n?|[\\n\\u2028\\u2029]'
 
 var _lineRegex = function (re, flags) {
   return new RegExp(re.source.replace(/@B/g, WS).replace(/@L/g, LE), flags)
 }
 
 /**
- * Matches an empty line, including its line-ending, if it has one.
+ * Matches an empty line or line with only whitespace within, including its
+ * line-ending, if it has one.
  * @type {RegExp}
  */
 export var EMPTY_LINES = _lineRegex(/^(?:@L|@B+(?:@L|$))/, 'mg')
 
 /**
- * Matches non-empty lines, including its line-ending, if it has one.
+ * Matches lines with at least one non-whitespace character, including its
+ * line-ending, if it has one.
  * @type {RegExp}
  */
 export var NON_EMPTY_LINES = _lineRegex(/^@B*\S.*(?:@L|$)/, 'mg')
@@ -94,7 +99,7 @@ export var TRAILING_WS = _lineRegex(/@B+$/, 'mg')
  * or the final blanks, if the (last) line has no line-ending.
  * @type {RegExp}
  */
-export var OPT_WS_EOL = _lineRegex(/(?:@L)|@B+(?:@L|$)/, 'gm')
+export var OPT_WS_EOL = _lineRegex(/(?:@L)|@B+(?:@L|$)/, 'g')
 
 /**
  * Matches line-ending of any type

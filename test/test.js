@@ -11,7 +11,8 @@ describe('HTML_CMNT', function () {
       '<!-- comment 1 --><!--comment 2--><!--x-- >',
       '<html lang="en">',
       '<head><meta charset="UTF-8"><title>Document</title></head>',
-      '<body><!--></body>',
+      '<body><!--><!----></body><!--',
+      '-->',
       '</html>',
     ].join('\n')
 
@@ -21,6 +22,8 @@ describe('HTML_CMNT', function () {
     expect(result[2]).toBe('<!--comment 2-->')
     expect(result[3]).toBe('<!--x-- >')
     expect(result[4]).toBe('<!-->')
+    expect(result[5]).toBe('<!---->')
+    expect(result[6]).toBe('<!--\n-->')
   })
 
 })
@@ -39,6 +42,13 @@ describe('JS_REGEX', function () {
     str.forEach(function (s) {
       expect(s.match(re)).toEqual(s)
     })
+  })
+
+  it('must include the flags', function () {
+    var str = '/./gimuys'
+
+    expect(str.match(re)).toEqual([str])
+    expect((str + '=').match(re)).toEqual([str])
   })
 
   it('must not confuse with comments', function () {
@@ -112,9 +122,18 @@ describe('JS_REGEX', function () {
     expect(mm[0]).toBe('/[[\\]]/')
   })
 
-  it('must handle escaped EOLs', function () {
+  it('must handle escaped line-endings', function () {
     expect('/\\r/').toEqual(['/\\r/'])
     expect('/[\\n]/').toEqual(['/[\\n]/'])
+  })
+
+  it('must handle unicode line-endings', function () {
+    expect('/\\u2028/').toEqual(['/\\u2028/'])
+    expect('/\\\u2028/').toEqual(['/\\\u2028/'])
+    expect('/[\\u2028]/').toEqual(['/[\\u2028]/'])
+    expect('/\\u2029/').toEqual(['/\\u2029/'])
+    expect('/\\\u2029/').toEqual(['/\\\u2029/'])
+    expect('/[\\u2029]/').toEqual(['/[\\u2029]/'])
   })
 
   it('must handle hex and unicode characters', function () {
@@ -243,6 +262,16 @@ describe('JS_DQSTR', function () {
     str.forEach(function (s) { expect(s.match(re)).toEqual([s]) })
   })
 
+  it('must allow lineContinuation within strings', function () {
+    var str = '"a\\\na\\\ra\\\r\na"'
+    expect(str.match(re)).toEqual([str])
+  })
+
+  it('must allow unicode LS and PS within strings', function () {
+    var str = '"\u2028\u2029"'
+    expect(str.match(re)).toEqual([str])
+  })
+
   it('must not match unclosed strings', function () {
     var str = [
       '"',
@@ -299,6 +328,16 @@ describe('JS_SQSTR', function () {
       "'a\\'\\'b'"
     ]
     str.forEach(function (s) { expect(s.match(re)).toEqual([s]) })
+  })
+
+  it('must allow lineContinuation within strings', function () {
+    var str = "'a\\\na\\\ra\\\r\na'"
+    expect(str.match(re)).toEqual([str])
+  })
+
+  it('must allow unicode LS and PS within strings', function () {
+    var str = "'\u2028\u2029'"
+    expect(str.match(re)).toEqual([str])
   })
 
   it('must not match unclosed strings', function () {
@@ -400,6 +439,8 @@ describe('TRAILING_WS', function () {
     expect('\r'.match(re)).toEqual(null)
     expect('\n'.match(re)).toEqual(null)
     expect('\r\n'.match(re)).toEqual(null)
+    expect('\u2028'.match(re)).toEqual(null)
+    expect('\u2029'.match(re)).toEqual(null)
   })
 
   it('must match trailing whitespace', function () {
@@ -410,17 +451,33 @@ describe('TRAILING_WS', function () {
     expect('\t\n'.match(re)).toEqual(['\t'])
     expect('\t\n '.match(re)).toEqual(['\t', ' '])
     expect('\v\f\n'.match(re)).toEqual(['\v\f'])
-    expect(' \r \r\n '.match(re)).toEqual([' ', ' ', ' '])
+    expect(' \n \n \n\n\n'.match(re)).toEqual([' ', ' ', ' '])
     expect('\n\v\n \f\n\t \n x\n \nx\n x '.match(re)).toEqual(['\v', ' \f', '\t ', ' ', ' '])
+  })
+
+  it('must recognize any line-ending', function () {
+    expect(' \r \r\n'.match(re)).toEqual([' ', ' '])
+    expect(' \r\n \r'.match(re)).toEqual([' ', ' '])
+    expect(' \u2028 '.match(re)).toEqual([' ', ' '])
+    expect(' \u2029 '.match(re)).toEqual([' ', ' '])
+    expect(' \r \r\n \u2028 \u2029\n'.match(re)).toEqual([' ', ' ', ' ', ' '])
+  })
+
+  it('must match trailing unicode whitespace', function () {
+    expect('\xA0'.match(re)).toEqual(['\xA0'])
+    expect('\uFEFF'.match(re)).toEqual(['\uFEFF'])
+    expect('\xA0\n\uFEFF'.match(re)).toEqual(['\xA0', '\uFEFF'])
+    expect('\xA0\n\uFEFF\n\xA0\n'.match(re)).toEqual(['\xA0', '\uFEFF', '\xA0'])
   })
 
   it('must not match lines without trailing whitespace', function () {
     expect(''.match(re)).toEqual(null)
     expect('\n'.match(re)).toEqual(null)
+    expect('\n\n'.match(re)).toEqual(null)
     expect(' x'.match(re)).toEqual(null)
     expect('x\n'.match(re)).toEqual(null)
     expect('\n x'.match(re)).toEqual(null)
-    expect('\n x'.match(re)).toEqual(null)
+    expect('\n x\n'.match(re)).toEqual(null)
   })
 
 })
@@ -432,6 +489,11 @@ describe('OPT_WS_EOL', function () {
     expect('\r'.search(re)).toBe(0)
     expect('\n'.search(re)).toBe(0)
     expect('\r\n'.search(re)).toBe(0)
+  })
+
+  it('must match unicode line-endings', function () {
+    expect('\u2028'.search(re)).toBe(0)
+    expect('\u2029'.search(re)).toBe(0)
   })
 
   it('must match trailing whitespace without line-ending', function () {
@@ -449,16 +511,32 @@ describe('OPT_WS_EOL', function () {
     expect('\t\n'.match(re)).toEqual(['\t\n'])
     expect('\t\n '.match(re)).toEqual(['\t\n', ' '])
     expect(' \v\f\n'.match(re)).toEqual([' \v\f\n'])
-    expect(' \r \r\r\n'.match(re)).toEqual([' \r', ' \r', '\r\n'])
+    expect(' \n \n\n'.match(re)).toEqual([' \n', ' \n', '\n'])
     expect('x \rx'.match(re)).toEqual([' \r'])
     expect('\n x\n \nx\n x\t'.match(re)).toEqual(['\n', '\n', ' \n', '\n', '\t'])
   })
 
-  it('must not match strings without tariling whitespace', function () {
+  it('must recognize mixed line-endings', function () {
+    expect(' \r \r\n'.match(re)).toEqual([' \r', ' \r\n'])
+    expect(' \r\n \r'.match(re)).toEqual([' \r\n', ' \r'])
+    expect('\u2028\u2029'.match(re)).toEqual(['\u2028', '\u2029'])
+    expect(' \r \r\n \u2028 \u2029\n'.match(re)).toEqual([' \r', ' \r\n', ' \u2028', ' \u2029', '\n'])
+  })
+
+  it('must match trailing unicode whitespace', function () {
+    expect('\xA0'.match(re)).toEqual(['\xA0'])
+    expect('\uFEFF'.match(re)).toEqual(['\uFEFF'])
+    expect('\xA0\n\uFEFF'.match(re)).toEqual(['\xA0\n', '\uFEFF'])
+    expect('\xA0\n\uFEFF\n\xA0\n'.match(re)).toEqual(['\xA0\n', '\uFEFF\n', '\xA0\n'])
+    expect(' \xA0\t\uFEFF\f\xA0\v'.match(re)).toEqual([' \xA0\t\uFEFF\f\xA0\v'])
+  })
+
+  it('must not match strings without trailing whitespace', function () {
     expect(''.match(re)).toEqual(null)
     expect('x'.match(re)).toEqual(null)
     expect(' x'.match(re)).toEqual(null)
     expect('\t\vx'.match(re)).toEqual(null)
+    expect(' x\n\n x'.match(re)).toEqual(['\n', '\n'])
   })
 
 })
@@ -470,6 +548,8 @@ describe('EOL', function () {
     expect('\n'.match(re)).toEqual(['\n'])
     expect('\r'.match(re)).toEqual(['\r'])
     expect('\r\n'.match(re)).toEqual(['\r\n'])
+    expect('\u2028'.match(re)).toEqual(['\u2028'])
+    expect('\u2029'.match(re)).toEqual(['\u2029'])
   })
 
   it('must match any combination of EOLs', function () {
@@ -477,6 +557,7 @@ describe('EOL', function () {
     expect('\r\n\n'.match(re)).toEqual(['\r\n', '\n'])
     expect('\n\n\r'.match(re)).toEqual(['\n', '\n', '\r'])
     expect('\r\n\r\n\r\r'.match(re)).toEqual(['\r\n', '\r\n', '\r', '\r'])
+    expect('\u2028\r\n\u2029\n'.match(re)).toEqual(['\u2028', '\r\n', '\u2029', '\n'])
   })
 
 })

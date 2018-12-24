@@ -1,5 +1,12 @@
 # Changelog of perf-regexes
 
+## [1.0.1] - 2018-12-23
+
+### Added
+
+- Support for the 's' (ES9 dotAll) flag.
+- Support unicode whitespace and line-endings.
+
 ## [1.0.0] - 2018-12-22
 
 Complete refactorization of the repo.
