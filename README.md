@@ -57,10 +57,10 @@ Selection of lines:
 
 Name            | Flags | Matches
 --------------- | :---: | -------
-NON_EMPTY_LINES | gm    | A non-empty line, including its line-ending, if it has one.
-EMPTY_LINES     | gm    | An empty line, including its line-ending, if it has one.
+EMPTY_LINES     | gm    | Empty line or line with only whitespace within, including its line-ending, if it has one.
+NON_EMPTY_LINES | gm    | Line with at least one non-whitespace character, including its line-ending, if it has one.
 TRAILING_WS     | gm    | The trailing whitespace of a line, without including its line-ending.
-OPT_WS_EOL      | gm    | Zero or more blank characters followed by a line-ending, or the final blanks, if the (last) line has no line-ending.
+OPT_WS_EOL      | g     | Zero or more blank characters followed by a line-ending, or the final blanks, if the (last) line has no line-ending.
 EOL             | g     | Line-ending of any type
 
 ### NOTE

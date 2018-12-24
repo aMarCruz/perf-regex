@@ -1,5 +1,5 @@
 /**
- * perf-regexes v1.0.0
+ * perf-regexes v1.0.1
  * @author aMarCruz
  * @license MIT
  */

@@ -1,6 +1,6 @@
 # Changelog of perf-regexes
 
-## [1.0.1] - 2018-12-23
+## [1.0.1] - 2018-12-24
 
 ### Added
 
